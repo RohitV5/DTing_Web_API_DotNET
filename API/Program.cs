@@ -13,9 +13,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DataContext>(opt => 
+builder.Services.AddCors();
+
+builder.Services.AddDbContext<DataContext>(opt =>
 {
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")); 
+    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
     //for passing connection string for sqlite
 });
 
@@ -33,6 +35,7 @@ if (app.Environment.IsDevelopment())
 // app.UseAuthorization();
 
 //Configure the http request pipeline for routing request.
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
 app.MapControllers();
 
 app.Run();

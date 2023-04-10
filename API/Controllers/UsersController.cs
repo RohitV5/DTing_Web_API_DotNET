@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]  // api/users
-    public class UsersController : ControllerBase
+     // api/users
+     //We created BaseApiController to put some controller boilerplate
+    public class UsersController : BaseApiController
     {
 
         /* One way of initililaizing */

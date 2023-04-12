@@ -1,12 +1,15 @@
 using API.Data;
 using API.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-     // api/users
-     //We created BaseApiController to put some controller boilerplate
+    //  api/users
+    //  We created BaseApiController to put some controller boilerplate
+    //  https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-7.0
+    [Authorize]  //This guard can be used at method level or controller level     
     public class UsersController : BaseApiController
     {
 

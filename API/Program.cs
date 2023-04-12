@@ -1,6 +1,8 @@
 //This file is the entry point for this application.
 
 using API.Data;
+using API.Interfaces;
+using API.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors();
+
+// Mentioning ITokenService is not mandatory below but its good for testing puropse
+//Based on how long service will live we can initialize service using AddScoped, AddTransient and Singleton
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddDbContext<DataContext>(opt =>
 {

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,17 +18,23 @@ namespace API.Controllers
     public class AccountController : BaseApiController
     {
         private readonly DataContext _context;
+        private readonly ITokenService _tokenService;
 
-        public AccountController(DataContext context)
+        public AccountController(DataContext context, ITokenService tokenService)
         {
+            // Framework will figure out which implmentation of these service needs to be injected.
+            // That we will inject in program.cs
             _context = context;
+            _tokenService = tokenService;
         }
 
 
         [HttpPost("register")] // POST: api/account/register
 
-        public async Task<ActionResult<AppUser>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
+            //During initial development we returned AppUser instead of UserDto because we didnt had UserDto
+            //UserDto returns data in token format inside on plain text data
 
             if (await UserExists(registerDto.Username))
             {
@@ -52,7 +60,20 @@ namespace API.Controllers
 
             await _context.SaveChangesAsync();
 
-            return user;
+
+            /** Way 1 on creating dto object from class*/
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
+
+            /** Classic Way 2 on creating dto object from class*/
+            //  UserDto userDto = new UserDto();
+
+            //  userDto.Username = user.UserName;
+            //  userDto.Token = _tokenService.CreateToken(user);
+            //  return userDto;
 
         }
 
@@ -64,7 +85,7 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AppUser>> Login(LoginDto loginDto)
+        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
 
             var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == loginDto.UserName);
@@ -100,7 +121,11 @@ namespace API.Controllers
 
 
 
-            return user;
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
 
 
             // In actual production its better to show a common error message if unathorized instead of being explicit

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { Event } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -30,5 +31,9 @@ export class HomeComponent {
       },
       complete: () => {},
     });
+  }
+
+  cancelRegister(event: boolean) {
+    this.registerMode = event;
   }
 }

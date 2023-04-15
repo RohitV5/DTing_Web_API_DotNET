@@ -1,30 +1,24 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
-  @Input() usersFromHomeComponent:any;
-  model:any = {}
+  @Input() usersFromHomeComponent: any;
+  @Output() cancelRegister = new EventEmitter();
+  model: any = {};
 
-  constructor(){
+  constructor() {}
 
+  ngOnInit() {}
+
+  register() {
+    console.log(this.model);
   }
 
-  ngOnInit(){
-
+  cancel() {
+    this.cancelRegister.emit(false);
   }
-
-  register(){
-    console.log(this.model)
-  }
-
-  cancel(){
-
-  }
-
-
-
 }

@@ -16,6 +16,8 @@ export class NavComponent implements OnInit {
 
   currentUser$: Observable<User | null> = of(null); //initialize with null;
 
+
+  // Improvement: You can make account service public and use it directly in template;
   constructor(private accountService: AccountService) {}
 
   ngOnInit() {

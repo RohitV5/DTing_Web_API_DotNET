@@ -6,5 +6,24 @@ import { Component } from '@angular/core';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
+  model:any = {}
+
+  constructor(){
+
+  }
+
+  ngOnInit(){
+
+  }
+
+  register(){
+    console.log(this.model)
+  }
+
+  cancel(){
+
+  }
+
+
 
 }

@@ -5,7 +5,9 @@
       Come on in to view your matches.....all you need to do is sign up
     </p>
     <div class="text-center">
-      <button (click)="toggle()" class="btn btn-primary btn-lg me-2">Register</button>
+      <button (click)="toggle()" class="btn btn-primary btn-lg me-2">
+        Register
+      </button>
       <button class="btn btn-primary btn-lg btn-info">Learn More</button>
     </div>
   </div>
@@ -13,7 +15,7 @@
   <div class="container" *ngIf="registerMode">
     <div class="row justify-content-center">
       <div class="col-4">
-        <p>Register form goes here</p>
+        <app-register></app-register>
       </div>
     </div>
   </div>

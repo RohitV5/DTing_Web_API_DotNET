@@ -1,0 +1,36 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using API.Data;
+using API.Interfaces;
+using API.Services;
+using Microsoft.EntityFrameworkCore;
+
+namespace API.Extensions
+{
+    public static class ApplicationServiceExtensions
+    {
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddDbContext<DataContext>(opt =>
+            {
+                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                //for passing connection string for sqlite
+            });
+
+            services.AddCors();
+
+            // Mentioning ITokenService is not mandatory below but its good for testing puropse
+            //Based on how long service will live we can initialize service using AddScoped, AddTransient and Singleton
+            services.AddScoped<ITokenService, TokenService>();
+
+
+            return services;
+        }
+
+
+    }
+
+
+}

@@ -51,7 +51,8 @@ namespace API.Controllers
         //Make it async for scalability
 
         //To make a function async you need to use async await
-
+        
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AppUser>>> GetUsersAsync()
         {

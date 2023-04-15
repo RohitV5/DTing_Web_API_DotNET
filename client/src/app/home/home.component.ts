@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 
 @Component({
@@ -7,16 +8,27 @@ import { Component } from '@angular/core';
 })
 export class HomeComponent {
   registerMode = false;
+  users: any;
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.getUsers();
+  }
 
-
-  toggle(){
-    console.log("toggling")
+  toggle() {
+    console.log('toggling');
     this.registerMode = !this.registerMode;
   }
 
-
+  getUsers() {
+    console.log('making api call');
+    this.http.get('http://localhost:5186/api/users').subscribe({
+      next: (response) => (this.users = response),
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => {},
+    });
+  }
 }

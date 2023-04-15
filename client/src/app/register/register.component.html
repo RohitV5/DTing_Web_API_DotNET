@@ -10,6 +10,19 @@
       placeholder="Username"
     />
   </div>
+  <div class="mb-3">
+    <label>Who is your favorite user?</label>
+    <select class="form-select">
+      <option
+        *ngFor="let user of usersFromHomeComponent"
+        [value]="user.userName"
+      >
+        {{ user.userName }}
+      </option>
+
+      <option></option>
+    </select>
+  </div>
 
   <div class="mb-3">
     <input
@@ -21,7 +34,9 @@
     />
   </div>
   <div class="text-center">
-    <button class="btn btn-success me-2" type="submit" >Register</button>
-    <button class="btn btn-default" type="button" (click)="cancel()">Cancel</button>
+    <button class="btn btn-success me-2" type="submit">Register</button>
+    <button class="btn btn-default" type="button" (click)="cancel()">
+      Cancel
+    </button>
   </div>
 </form>

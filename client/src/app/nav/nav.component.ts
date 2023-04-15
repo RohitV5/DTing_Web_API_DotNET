@@ -1,3 +1,4 @@
+import { AccountService } from './../_services/account.service';
 import { Component } from '@angular/core';
 
 @Component({
@@ -11,7 +12,17 @@ export class NavComponent {
     password: '',
   };
 
+  loggedIn: boolean = false;
+
+  constructor(private accountService: AccountService) {}
+
   login() {
-    console.log(this.model);
+    this.accountService.login(this.model).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.loggedIn = true;
+      },
+      error: (error) => console.log(error),
+    });
   }
 }

@@ -10,6 +10,7 @@ namespace API.DTOs
 
         //Different validators can be added in property so that when recived from client these are validated
         [Required]
+        [StringLength(8, MinimumLength = 4)]
         public string Password { get; set; }
     }
 }

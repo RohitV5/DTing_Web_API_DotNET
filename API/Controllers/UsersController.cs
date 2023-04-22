@@ -35,14 +35,18 @@ namespace API.Controllers
 
         //Synchronous code
         [HttpGet()]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers() 
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         //AppUser type is also valid. But how? because we are returning Ok. but that is wrong
         {
-            var users = await _userRepository.GetUsersAsync();
+            //Straightforward way of fetching AppUser List and convert to MemberDto type and return
+            // var users = await _userRepository.GetUsersAsync();
+            // var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
+            // return Ok(usersToReturn);
 
-            var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
+            var users = await _userRepository.GetMembersAsync();
+            return Ok(users);
 
-            return Ok(usersToReturn);
+
         }
 
 
@@ -50,11 +54,15 @@ namespace API.Controllers
         [HttpGet("{username}")]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(username);
+            //Straightforward way of fetching AppUser and convert to MemberDto type and return
+            // var user = await _userRepository.GetUserByUsernameAsync(username);
+            // var usersToReturn = _mapper.Map<MemberDto>(user);            
+            // return usersToReturn;
 
-            var usersToReturn = _mapper.Map<MemberDto>(user);
-            
-            return usersToReturn;
+            //Add automapper logic in UserRepository.
+            return await _userRepository.GetMemberAsync(username);
+
+
 
         }
 

@@ -40,10 +40,13 @@ namespace API.Entities
 
         //Automapper is smart to find Age from properties then it will look for \Get+property name()\ and map the value
         //Using this logic we can create mapping logic for fields which do not match
-        public int GetAge()
-        {
-            return DateOfBirth.CalculateAge();
-        }
+
+        // public int GetAge()
+        // {
+        //     return DateOfBirth.CalculateAge();
+        // }
+        
+        //removing and moving it to automapper in createMap other place because projections are still fetching all the values instead of DTO type
 
 
 

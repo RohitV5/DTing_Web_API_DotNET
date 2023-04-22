@@ -8,6 +8,10 @@ namespace API.DTOs
 
         public string UserName { get; set; }
 
+        public string PhotoUrl { get; set; } 
+        //In case automapper doesnt find any matchinf property it will be set to null
+        //For such properties we need to write logic in creatMap in autoMapper profile.
+
         public int Age { get; set; }
 
         public string KnownAs { get; set; }

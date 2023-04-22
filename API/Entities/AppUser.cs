@@ -37,6 +37,9 @@ namespace API.Entities
 
         public List<Photo> Photos { get; set; } = new();  //shorthand for new List<Photo>()
 
+
+        //Automapper is smart to find Age from properties then it will look for \Get+property name()\ and map the value
+        //Using this logic we can create mapping logic for fields which do not match
         public int GetAge()
         {
             return DateOfBirth.CalculateAge();

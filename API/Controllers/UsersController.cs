@@ -1,5 +1,6 @@
 using API.Data;
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,28 +22,28 @@ namespace API.Controllers
 
         // }
 
-        private readonly DataContext _context;
-        public UsersController(DataContext context)
+        private readonly IUserRepository _userRepository;
+        public UsersController(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
 
         }
 
         //Synchronous code
         [HttpGet("sync")]
-        public ActionResult<IEnumerable<AppUser>> GetUsers()
+        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
         {
-            var users = _context.Users.ToList();
+            var users = await _userRepository.GetUsersAsync();
 
-            return users;
+            return Ok(users);
         }
 
 
         //Synchronous code
-        [HttpGet("sync/{id}")]
-        public ActionResult<AppUser> GetUser(int id)
+        [HttpGet("{username}")]
+        public async Task<ActionResult<AppUser>> GetUser(string username)
         {
-            var user = _context.Users.Find(id);
+            var user = await _userRepository.GetUserByUsernameAsync(username);
             return user;
 
         }
@@ -51,23 +52,23 @@ namespace API.Controllers
         //Make it async for scalability
 
         //To make a function async you need to use async await
-        
-        [AllowAnonymous]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsersAsync()
-        {
-            var users = await _context.Users.ToListAsync();
 
-            return users;
-        }
+        // [AllowAnonymous]
+        // [HttpGet]
+        // public async Task<ActionResult<IEnumerable<AppUser>>> GetUsersAsync()
+        // {
+        //     var users = await _context.Users.ToListAsync();
+
+        //     return users;
+        // }
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AppUser>> GetUserAsync(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            return user;
+        // [HttpGet("{id}")]
+        // public async Task<ActionResult<AppUser>> GetUserAsync(int id)
+        // {
+        //     var user = await _context.Users.FindAsync(id);
+        //     return user;
 
-        }
+        // }
     }
 }

@@ -1,6 +1,8 @@
 using API.Data;
+using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,28 +25,36 @@ namespace API.Controllers
         // }
 
         private readonly IUserRepository _userRepository;
-        public UsersController(IUserRepository userRepository)
+        private readonly IMapper _mapper;
+
+        public UsersController(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
-
+            _mapper = mapper;
         }
 
         //Synchronous code
-        [HttpGet("sync")]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+        [HttpGet()]
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers() 
+        //AppUser type is also valid. But how? because we are returning Ok. but that is wrong
         {
             var users = await _userRepository.GetUsersAsync();
 
-            return Ok(users);
+            var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
+
+            return Ok(usersToReturn);
         }
 
 
         //Synchronous code
         [HttpGet("{username}")]
-        public async Task<ActionResult<AppUser>> GetUser(string username)
+        public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
             var user = await _userRepository.GetUserByUsernameAsync(username);
-            return user;
+
+            var usersToReturn = _mapper.Map<MemberDto>(user);
+            
+            return usersToReturn;
 
         }
 

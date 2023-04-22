@@ -25,6 +25,8 @@ namespace API.Extensions
             //Based on how long service will live we can initialize service using AddScoped, AddTransient and Singleton
             services.AddScoped<ITokenService, TokenService>();
 
+            services.AddScoped<IUserRepository, UserRepository>();
+
 
             return services;
         }

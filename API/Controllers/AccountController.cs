@@ -48,6 +48,7 @@ namespace API.Controllers
 
 
             user.UserName = registerDto.Username.ToLower();
+            user.Gender = registerDto.Gender.ToLower();
 
             //creating an instance of hmac
             using var hmac = new HMACSHA512();

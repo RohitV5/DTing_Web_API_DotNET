@@ -78,6 +78,13 @@ namespace API.Data
 
             query = query.Where(user => user.DateOfBirth >= minDOb && user.DateOfBirth <= maxDOb);
 
+            query = userParams.OrderBy switch
+            {
+                "created" => query.OrderByDescending(u => u.Created),
+                _ => query.OrderByDescending(u => u.LastActive)
+
+            };
+
             //convert user query to memberdto query
             var mappedQuery = query.AsNoTracking().ProjectTo<MemberDto>(_mapper.ConfigurationProvider);
 

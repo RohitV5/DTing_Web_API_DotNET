@@ -10,6 +10,7 @@ using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using API.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,9 +20,11 @@ namespace API.Controllers
     {
         private readonly DataContext _context;
         private readonly ITokenService _tokenService;
+        public IMapper _mapper { get; set; }
 
-        public AccountController(DataContext context, ITokenService tokenService)
+        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
         {
+            _mapper = mapper;
             // Framework will figure out which implmentation of these service needs to be injected.
             // That we will inject in program.cs
             _context = context;
@@ -42,6 +45,13 @@ namespace API.Controllers
             }
             //using keyword will dispose the variable once its unused. //for garbage collection
 
+            Console.WriteLine("Running map");
+            var user = _mapper.Map<AppUser>(registerDto);
+
+            Console.WriteLine("Mapping done");
+
+            user.UserName = registerDto.Username.ToLower();
+
             //creating an instance of hmac
             using var hmac = new HMACSHA512();
 
@@ -49,12 +59,8 @@ namespace API.Controllers
             //the computed hash is specific to the salt that was generated in this instance
             //every time this function runs a new instance of hmac is generated and a hash is generated against a new salt
             //and that is why we are storing the salt in db for each user.
-            var user = new AppUser
-            {
-                UserName = registerDto.Username.ToLower(),
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-                PasswordSalt = hmac.Key
-            };
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+            user.PasswordSalt = hmac.Key;
 
             _context.Users.Add(user);
 
@@ -65,7 +71,9 @@ namespace API.Controllers
             return new UserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                KnownAs = user.KnownAs,
+                Gender = user.Gender
             };
 
             /** Classic Way 2 on creating dto object from class*/

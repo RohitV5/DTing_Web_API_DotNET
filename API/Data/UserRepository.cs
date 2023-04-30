@@ -67,6 +67,9 @@ namespace API.Data
                   .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
                   .AsNoTracking();
 
+            query = query.Where(user => user.Gender.ToLower() == userParams.Gender.ToLower());
+            query = query.Where(user => user.UserName != userParams.CurrentUsername);
+
             return await PagedList<MemberDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
         }
 

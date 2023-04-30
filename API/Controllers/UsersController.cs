@@ -45,6 +45,18 @@ namespace API.Controllers
             // var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
             // return Ok(usersToReturn);
 
+            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var currentUser = await _userRepository.GetUserByUsernameAsync(username);
+
+
+            if(string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = currentUser.Gender.ToLower() == "male" ? "female" : "male";
+            } 
+
+
+
             var users = await _userRepository.GetMembersAsync(userParams);
 
             Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages));

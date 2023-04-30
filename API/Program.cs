@@ -1,9 +1,10 @@
 //This file is the entry point for this application.
 
 using API.Data;
+using API.Entities;
 using API.Extensions;
 using API.MIddleware;
-
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -64,7 +65,9 @@ try
 {
     var context = services.GetRequiredService<DataContext>();
     await context.Database.MigrateAsync();
-    // await Seed.SeedUsers(context);
+    // Previously seeded with data context now with user manager
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    await Seed.SeedUsers(userManager);
 }
 catch(Exception e)
 {

@@ -11,6 +11,7 @@ using API.Entities;
 using API.Interfaces;
 using API.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,16 +19,16 @@ namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
-        private readonly DataContext _context;
         private readonly ITokenService _tokenService;
         public IMapper _mapper { get; set; }
+        public UserManager<AppUser> _userManager { get; }
 
-        public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
+        public AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper)
         {
-            _mapper = mapper;
             // Framework will figure out which implmentation of these service needs to be injected.
             // That we will inject in program.cs
-            _context = context;
+            _userManager = userManager;
+            _mapper = mapper;
             _tokenService = tokenService;
         }
 
@@ -51,7 +52,7 @@ namespace API.Controllers
             user.Gender = registerDto.Gender.ToLower();
 
             //creating an instance of hmac
-            using var hmac = new HMACSHA512();
+            // using var hmac = new HMACSHA512();
 
 
             //the computed hash is specific to the salt that was generated in this instance
@@ -60,9 +61,11 @@ namespace API.Controllers
             // user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
             // user.PasswordSalt = hmac.Key;
 
-            _context.Users.Add(user);
+     
 
-            await _context.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+
+            if(!result.Succeeded) return BadRequest(result.Errors);
 
 
             /** Way 1 on creating dto object from class*/
@@ -87,57 +90,30 @@ namespace API.Controllers
         private async Task<bool> UserExists(string username)
         {
 
-            return await _context.Users.AnyAsync(x => x.UserName == username.ToLower());
+            return await _userManager.Users.AnyAsync(x => x.UserName == username.ToLower());
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == loginDto.UserName);
+            var user = await _userManager.Users
+                .Include(p => p.Photos)
+                .SingleOrDefaultAsync(x => x.UserName == loginDto.Username);
 
             if (user == null) return Unauthorized("invalid username");
 
+            var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
-            //this returns a byte array
-            // var hmac = new HMACSHA512(user.PasswordSalt);
-
-            // var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
-
-            /**Note: Wrong way to compare two byte array 
-            **  This will never return true*/
-            // if (user.PasswordHash == computedHash)
-            // {
-            //     return user;
-            // }
-
-
-            for (int i = 0; i < user.PasswordHash.Length; i++)
-            {
-                // if (computedHash[i] != user.PasswordHash[i])
-                // {
-                //     var jsonResponse = JsonSerializer.Serialize(new
-                //     {
-                //         error = "invalid password"
-                //     });
-                //     return Unauthorized(jsonResponse);
-                // }
-
-            }
-
-
+            if (!result) return Unauthorized("Invalid password");
 
             return new UserDto
             {
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token =  _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
+                KnownAs = user.KnownAs,
+                Gender = user.Gender
             };
-
-
-            // In actual production its better to show a common error message if unathorized instead of being explicit
-            // That way spammers won't know which value they are giving is incorrect.
-
-
         }
     }
 }

@@ -63,14 +63,27 @@ namespace API.Data
 
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
-            var query = _context.Users
-                  .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-                  .AsNoTracking();
+            // Not the best way are you can run query on memberdto type instead of user type
+            // var query = _context.Users
+            //       .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+            //       .AsNoTracking();
+
+            var query = _context.Users.AsQueryable();
 
             query = query.Where(user => user.Gender.ToLower() == userParams.Gender.ToLower());
             query = query.Where(user => user.UserName != userParams.CurrentUsername);
 
-            return await PagedList<MemberDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+            var minDOb = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
+            var maxDOb = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge - 1));
+
+            query = query.Where(user => user.DateOfBirth >= minDOb && user.DateOfBirth <= maxDOb);
+
+            //convert user query to memberdto query
+            var mappedQuery = query.AsNoTracking().ProjectTo<MemberDto>(_mapper.ConfigurationProvider);
+
+
+
+            return await PagedList<MemberDto>.CreateAsync(mappedQuery, userParams.PageNumber, userParams.PageSize);
         }
 
     }

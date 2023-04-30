@@ -44,11 +44,8 @@ namespace API.Controllers
                 return BadRequest("Username is taken");
             }
             //using keyword will dispose the variable once its unused. //for garbage collection
-
-            Console.WriteLine("Running map");
             var user = _mapper.Map<AppUser>(registerDto);
 
-            Console.WriteLine("Mapping done");
 
             user.UserName = registerDto.Username.ToLower();
 

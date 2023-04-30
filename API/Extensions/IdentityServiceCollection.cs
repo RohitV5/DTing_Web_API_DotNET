@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using API.Data;
+using API.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Extensions
@@ -12,6 +15,13 @@ namespace API.Extensions
     {
         public static IServiceCollection AddIdentityService(this IServiceCollection services, IConfiguration config)
         {
+            services.AddIdentityCore<AppUser>(opt =>
+         {
+             opt.Password.RequireNonAlphanumeric = false;
+         })
+             .AddRoles<AppRole>()
+             .AddRoleManager<RoleManager<AppRole>>()
+             .AddEntityFrameworkStores<DataContext>();
             // Adding authorization and giving the tokenkey to validate the token and mentioning the type of authentication we are 
             // adding ie. jwt.
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

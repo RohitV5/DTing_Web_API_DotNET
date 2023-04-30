@@ -57,8 +57,8 @@ namespace API.Controllers
             //the computed hash is specific to the salt that was generated in this instance
             //every time this function runs a new instance of hmac is generated and a hash is generated against a new salt
             //and that is why we are storing the salt in db for each user.
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
-            user.PasswordSalt = hmac.Key;
+            // user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+            // user.PasswordSalt = hmac.Key;
 
             _context.Users.Add(user);
 
@@ -100,9 +100,9 @@ namespace API.Controllers
 
 
             //this returns a byte array
-            var hmac = new HMACSHA512(user.PasswordSalt);
+            // var hmac = new HMACSHA512(user.PasswordSalt);
 
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+            // var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
 
             /**Note: Wrong way to compare two byte array 
             **  This will never return true*/
@@ -114,14 +114,14 @@ namespace API.Controllers
 
             for (int i = 0; i < user.PasswordHash.Length; i++)
             {
-                if (computedHash[i] != user.PasswordHash[i])
-                {
-                    var jsonResponse = JsonSerializer.Serialize(new
-                    {
-                        error = "invalid password"
-                    });
-                    return Unauthorized(jsonResponse);
-                }
+                // if (computedHash[i] != user.PasswordHash[i])
+                // {
+                //     var jsonResponse = JsonSerializer.Serialize(new
+                //     {
+                //         error = "invalid password"
+                //     });
+                //     return Unauthorized(jsonResponse);
+                // }
 
             }
 

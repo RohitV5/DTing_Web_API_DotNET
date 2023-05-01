@@ -67,9 +67,11 @@ try
     await context.Database.MigrateAsync();
     // Previously seeded with data context now with user manager
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
-    await Seed.SeedUsers(userManager);
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+
+    await Seed.SeedUsers(userManager, roleManager);
 }
-catch(Exception e)
+catch (Exception e)
 {
     var logger = services.GetService<ILogger<Program>>();
     logger.LogError(e, "An error occurred during migration");

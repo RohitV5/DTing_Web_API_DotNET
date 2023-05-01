@@ -105,14 +105,24 @@ namespace API.Controllers
 
         //To make a function async you need to use async await
 
-        // [AllowAnonymous]
-        // [HttpGet]
-        // public async Task<ActionResult<IEnumerable<AppUser>>> GetUsersAsync()
-        // {
-        //     var users = await _context.Users.ToListAsync();
+        [AllowAnonymous]
+        [HttpGet("dbcheck")]
 
-        //     return users;
-        // }
+        public async Task<ActionResult<List<MemberDto>>> GetUsersAsync()
+        {
+            //Data fetching is dont inside repository.
+            //In controller we get the Enumerable type which can be converted toList ok Action Result
+            var users = await _userRepository.GetUsersAsync();
+
+            //Just for testing interating over the enumerable list
+            foreach (var user in users)
+            {
+                Console.WriteLine(user.UserName);
+            }
+
+            //Since we can't return 
+            return Ok(users);   //same as users.ToList();
+        }
 
 
         // [HttpGet("{id}")]

@@ -13,7 +13,7 @@ namespace API.Data
 {
     public class Seed
     {
-        public static async Task SeedUsers(UserManager<AppUser> userManager)
+        public static async Task SeedUsers(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
             if (await userManager.Users.AnyAsync()) return;
 
@@ -25,6 +25,20 @@ namespace API.Data
             //Converting JSON string to list type of AppUsers
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
 
+            var roles = new List<AppRole>
+            {
+                new AppRole{Name = "Member"},
+                new AppRole{Name = "Admin"},
+                new AppRole{Name = "Moderator"}
+            };
+
+            foreach (var role in roles)
+            {
+                await roleManager.CreateAsync(role);
+            }
+
+
+
             foreach (var user in users)
             {
                 // using var hmac = new HMACSHA512();
@@ -33,7 +47,18 @@ namespace API.Data
                 // user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("password"));
                 // user.PasswordSalt = hmac.Key;
 
-                await userManager.CreateAsync(user, "Pa$$w0rd");
+                await userManager.CreateAsync(user, "Passw0rd");
+                await userManager.AddToRoleAsync(user, "Member");
+            }
+
+
+            //Seeding a admin user
+            {
+                var admin = new AppUser { UserName = "admin" };
+
+                await userManager.CreateAsync(admin, "Passw0rd");
+                //Assigning multiple roles
+                await userManager.AddToRolesAsync(admin, new[] {"Admin","Member","Moderator"});
             }
 
 

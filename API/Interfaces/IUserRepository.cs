@@ -14,7 +14,7 @@ namespace API.Interfaces
 
         Task<bool> SaveAllAsync();
 
-        Task<IEnumerable<AppUser>> GetUsersAsync();  
+        Task<IEnumerable<MemberDto>> GetUsersAsync();  
         //We could have returned a List<AppUser>  but List can be modified and this method is all about getting data;
 
         Task<AppUser> GetUserByIdAsync(int id);

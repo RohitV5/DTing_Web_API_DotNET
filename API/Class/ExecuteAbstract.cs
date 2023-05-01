@@ -7,7 +7,7 @@ namespace API.Class
 {
     public class ExecuteAbstract
     {
-        static void Main(string[] args)
+        static void Majin(string[] args)
         {
             var da1 = new PostgresDataAccess();
             AbstractDemoClass da2 = new SQLiteDataAccess();

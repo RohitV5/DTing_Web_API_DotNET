@@ -32,11 +32,10 @@ namespace API.Data
             return await _context.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.UserName == username);
         }
 
-        public async Task<IEnumerable<AppUser>> GetUsersAsync()
+        public async Task<IEnumerable<MemberDto>> GetUsersAsync()
         {
             //Will give a possible object cycle was detected
-            return await _context.Users.Include(p => p.Photos).ToListAsync();
-
+            return await _context.Users.Include(p => p.Photos).ProjectTo<MemberDto>(_mapper.ConfigurationProvider).ToListAsync();
             // return await _context.Users.ToListAsync(); //without photos
         }
 

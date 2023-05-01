@@ -88,7 +88,7 @@ namespace API.Controllers
         {
             var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var user = await _userRepository.GetUserByUsernameAsync(username); //current userdata of type AppUser
+            var user = await _userRepository.GetUserByIdAsync(int.Parse(username)); //current userdata of type AppUser
 
 
             if (user == null) return NotFound();

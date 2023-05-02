@@ -24,6 +24,8 @@ namespace API.Data
 
         //For photos DBSet is not needed because we will not query it directly but via Users.
         // So table name will be picked up from classname or we can override in entity with decorator
+
+        //Overriding the DB creation for different tables
          protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -41,7 +43,7 @@ namespace API.Data
                 .IsRequired();
 
             builder.Entity<UserLike>()
-                .HasKey(k => new { k.SourceUserId, k.TargetUserId });
+                .HasKey(k => new { k.SourceUserId, k.TargetUserId }); //Primary key is made of combination of two values
 
             builder.Entity<UserLike>()
                 .HasOne(s => s.SourceUser)

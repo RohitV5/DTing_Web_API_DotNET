@@ -1,37 +1,36 @@
-import { Observable, of } from 'rxjs';
-import { User } from '../models/user';
-import { AccountService } from './../_services/account.service';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { Observable, of } from 'rxjs';
+import { User } from '../_models/user';
+import { AccountService } from '../_services/account.service';
 
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.css'],
+  styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-  model: { username: string; password: string } = {
-    username: '',
-    password: '',
-  };
+  model: any = {};
 
-  currentUser$: Observable<User | null> = of(null); //initialize with null;
+  constructor(public accountService: AccountService, private router: Router, 
+    private toastr: ToastrService) { }
 
-
-  // Improvement: You can make account service public and use it directly in template;
-  constructor(private accountService: AccountService) {}
-
-  ngOnInit() {
-    this.currentUser$ = this.accountService.currentUser$;
+  ngOnInit(): void {
   }
 
   login() {
     this.accountService.login(this.model).subscribe({
-      next: (response) => {},
-      error: (error) => console.log(error),
-    });
+      next: _ => {
+        this.router.navigateByUrl('/members');
+        this.model = {};
+      }
+    })
   }
 
   logout() {
     this.accountService.logout();
+    this.router.navigateByUrl('/');
   }
+
 }

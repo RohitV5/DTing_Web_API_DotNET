@@ -102,6 +102,8 @@ namespace API.Data
                 {
                     message.DateRead = DateTime.UtcNow;
                 }
+
+                await _context.SaveChangesAsync();
             }
 
             return await query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider).ToListAsync();

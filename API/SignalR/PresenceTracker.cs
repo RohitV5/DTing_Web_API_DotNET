@@ -3,6 +3,9 @@ namespace API.SignalR
     //For tracking all online users
     public class PresenceTracker
     {
+        // List will have list of devices and one username as key for Dictionary
+
+
         private static readonly Dictionary<string, List<string>> OnlineUsers = 
             new Dictionary<string, List<string>>();
 

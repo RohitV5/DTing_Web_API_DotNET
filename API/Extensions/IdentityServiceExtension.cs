@@ -35,6 +35,8 @@ namespace API.Extensions
                         ValidateAudience = false
                     };
 
+
+                    //This setting is for hubs
                      options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context => 

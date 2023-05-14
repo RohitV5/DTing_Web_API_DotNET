@@ -92,7 +92,7 @@ namespace API.Data
                 .OrderBy(m => m.MessageSent)
                 .AsQueryable();
 
-
+            //api calling happens on toLIst()
             var unreadMessages = query.Where(m => m.DateRead == null 
                 && m.RecipientUsername == currentUserName).ToList();
 

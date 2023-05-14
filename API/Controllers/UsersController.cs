@@ -36,28 +36,33 @@ namespace API.Controllers
         public UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService)
         {
             _unitOfWork = unitOfWork;
-            // _userRepository = userRepository;            _mapper = mapper;
+            // _userRepository = userRepository;           
+            _mapper = mapper;
             _photoService = photoService;
         }
 
         //Synchronous code
-        [HttpGet()]
+        [HttpGet]
         public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         //AppUser type is also valid. But how? because we are returning Ok. but that is wrong
         {
             //Straightforward way of fetching AppUser List and convert to MemberDto type and return
-            // var users = await _unitOfWork.UserRepository.GetUsersAsync();
+            // var users = await _userRepository.GetUsersAsync();
             // var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
             // return Ok(usersToReturn);
 
-            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            //Getting current user gender to search for users of opposite gender
+            var gender = await _unitOfWork.UserRepository.GetUserGender(User.GetUsername());
+            userParams.CurrentUsername = User.GetUsername();
 
-            var currentUser = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
+            // var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // var currentUser = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
 
 
             if (string.IsNullOrEmpty(userParams.Gender))
             {
-                userParams.Gender = currentUser.Gender.ToLower() == "male" ? "female" : "male";
+                userParams.Gender = gender?.ToLower() == "male" ? "female" : "male";
             }
 
 

@@ -92,6 +92,10 @@ namespace API.Data
             return await PagedList<MemberDto>.CreateAsync(mappedQuery, userParams.PageNumber, userParams.PageSize);
         }
 
+        public async Task<string> GetUserGender(string username)
+        {
+            return await _context.Users.Where(user => user.UserName == username).Select(x => x.Gender).FirstOrDefaultAsync();
+        }
     }
 
 }

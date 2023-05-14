@@ -103,7 +103,7 @@ namespace API.Data
                     message.DateRead = DateTime.UtcNow;
                 }
 
-                await _context.SaveChangesAsync();
+                // await _context.SaveChangesAsync();
             }
 
             return await query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider).ToListAsync();
@@ -115,9 +115,9 @@ namespace API.Data
         }
 
 
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }
+        // public async Task<bool> SaveAllAsync()
+        // {
+        //     return await _context.SaveChangesAsync() > 0;
+        // }
     }
 }

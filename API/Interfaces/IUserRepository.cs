@@ -12,7 +12,7 @@ namespace API.Interfaces
     {
         void Update(AppUser user);
 
-        Task<bool> SaveAllAsync();
+        // Task<bool> SaveAllAsync(); //not needed because of UnitOfWork
 
         Task<IEnumerable<MemberDto>> GetUsersAsync();  
         //We could have returned a List<AppUser>  but List can be modified and this method is all about getting data;

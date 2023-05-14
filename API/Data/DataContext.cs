@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
+
+    //Since derived from IdentityDBContext it will have user tables AppUser , Approle, AppUserRole etc
+    //public class DataContext: DbContext //previously used when user tables were created using dbset.
     public class DataContext : IdentityDbContext<AppUser, AppRole, int,
         IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>,
         IdentityRoleClaim<int>, IdentityUserToken<int>>

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using API.Data;
 using API.Helpers;
 using API.Interfaces;
@@ -27,9 +23,10 @@ namespace API.Extensions
             //Based on how long service will live we can initialize service using AddScoped, AddTransient and Singleton
             services.AddScoped<ITokenService, TokenService>();
 
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<ILikesRepository, LikesRepository>();
-            services.AddScoped<IMessageRepository, MessageRepository>();
+            // Not needed anymore because of UnitOfWork
+            // services.AddScoped<IUserRepository, UserRepository>();
+            // services.AddScoped<ILikesRepository, LikesRepository>();
+            // services.AddScoped<IMessageRepository, MessageRepository>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -40,7 +37,7 @@ namespace API.Extensions
 
             services.AddSignalR();
             services.AddSingleton<PresenceTracker>();
-            // services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
             return services;

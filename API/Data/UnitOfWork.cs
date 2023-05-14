@@ -1,6 +1,7 @@
 using API.Interfaces;
 using AutoMapper;
-
+// Instead of passing repository directly in controller we will pass unity of work which will initialise all the repositories
+//and controller can access these repositories through unitOfWork class instance.
 namespace API.Data
 {
     public class UnitOfWork : IUnitOfWork
@@ -15,9 +16,9 @@ namespace API.Data
 
         public IUserRepository UserRepository => new UserRepository(_context, _mapper);
 
-        // public IMessageRepository MessageRepository => new MessageRepository(_context, _mapper);
+        public IMessageRepository MessageRepository => new MessageRepository(_context, _mapper);
 
-        // public ILikesRepository LikesRepository => new LikesRepository(_context);
+        public ILikesRepository LikesRepository => new LikesRepository(_context);
 
         public async Task<bool> Complete()
         {

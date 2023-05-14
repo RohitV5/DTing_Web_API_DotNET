@@ -27,15 +27,16 @@ namespace API.Controllers
 
         // }
 
-        private readonly IUserRepository _userRepository;
+        // private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
         private readonly IPhotoService _photoService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UsersController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService)
+        public UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
+            _unitOfWork = unitOfWork;
+            // _userRepository = userRepository;            _mapper = mapper;
             _photoService = photoService;
         }
 
@@ -45,13 +46,13 @@ namespace API.Controllers
         //AppUser type is also valid. But how? because we are returning Ok. but that is wrong
         {
             //Straightforward way of fetching AppUser List and convert to MemberDto type and return
-            // var users = await _userRepository.GetUsersAsync();
+            // var users = await _unitOfWork.UserRepository.GetUsersAsync();
             // var usersToReturn = _mapper.Map<IEnumerable<MemberDto>>(users);
             // return Ok(usersToReturn);
 
             var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var currentUser = await _userRepository.GetUserByUsernameAsync(username);
+            var currentUser = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
 
 
             if (string.IsNullOrEmpty(userParams.Gender))
@@ -61,7 +62,7 @@ namespace API.Controllers
 
 
 
-            var users = await _userRepository.GetMembersAsync(userParams);
+            var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);
 
             Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages));
             return Ok(users);
@@ -75,12 +76,12 @@ namespace API.Controllers
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
             //Straightforward way of fetching AppUser and convert to MemberDto type and return
-            // var user = await _userRepository.GetUserByUsernameAsync(username);
+            // var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
             // var usersToReturn = _mapper.Map<MemberDto>(user);            
             // return usersToReturn;
 
             //Add automapper logic in UserRepository.
-            return await _userRepository.GetMemberAsync(username);
+            return await _unitOfWork.UserRepository.GetMemberAsync(username);
 
 
 
@@ -94,14 +95,14 @@ namespace API.Controllers
             // var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var userId = User.GetUserId();
 
-            var user = await _userRepository.GetUserByIdAsync(userId); //current userdata of type AppUser
+            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(userId); //current userdata of type AppUser
 
 
             if (user == null) return NotFound();
 
             _mapper.Map(memberUpdateDto, user); //will update user AppUser with updated values
 
-            if (await _userRepository.SaveAllAsync()) return NoContent();
+            if (await _unitOfWork.Complete()) return NoContent();
 
             return BadRequest("Failed to update user");
         }
@@ -118,7 +119,7 @@ namespace API.Controllers
         {
             //Data fetching is dont inside repository.
             //In controller we get the Enumerable type which can be converted toList ok Action Result
-            var users = await _userRepository.GetUsersAsync();
+            var users = await _unitOfWork.UserRepository.GetUsersAsync();
 
             //Just for testing interating over the enumerable list
             foreach (var user in users)
@@ -142,7 +143,7 @@ namespace API.Controllers
         [HttpPost("add-photo")]
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
             if (user == null) return NotFound();
 
@@ -161,7 +162,7 @@ namespace API.Controllers
             user.Photos.Add(photo); //Entity framework is tracking this is memory.
 
 
-            if (await _userRepository.SaveAllAsync())
+            if (await _unitOfWork.Complete())
 
                 // To send 201 Created response and Location header 
                 return CreatedAtAction(nameof(GetUser),
@@ -174,7 +175,7 @@ namespace API.Controllers
         [HttpPut("set-main-photo/{photoId}")]
         public async Task<ActionResult> SetMainPhoto(int photoId)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
             if (user == null) return NotFound();
 
@@ -188,7 +189,7 @@ namespace API.Controllers
             if (currentMain != null) currentMain.IsMain = false;
             photo.IsMain = true;
 
-            if (await _userRepository.SaveAllAsync()) return NoContent();
+            if (await _unitOfWork.Complete()) return NoContent();
 
             return BadRequest("Problem setting the main photo");
         }
@@ -196,7 +197,7 @@ namespace API.Controllers
         [HttpDelete("delete-photo/{photoId}")]
         public async Task<ActionResult> DeletePhoto(int photoId)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
             var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
 
@@ -212,7 +213,7 @@ namespace API.Controllers
 
             user.Photos.Remove(photo);
 
-            if (await _userRepository.SaveAllAsync()) return Ok();
+            if (await _unitOfWork.Complete()) return Ok();
 
             return BadRequest("Problem deleting photo");
         }
